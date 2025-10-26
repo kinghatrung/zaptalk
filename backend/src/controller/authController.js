@@ -33,9 +33,12 @@ const authController = {
 
   logout: async (req, res) => {
     try {
-      res.clearCookie("refreshToken");
+      const token = req.cookies?.refreshToken;
+      if (token) {
+        res.clearCookie("refreshToken");
+      }
 
-      res.status(200).json({ message: "Đăng xuất thành công!" });
+      res.sendStatus(204);
     } catch (err) {
       res.status(500).json({ message: err.message });
     }

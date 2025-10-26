@@ -1,5 +1,6 @@
 import ms from "ms";
 import authService from "../services/authService.js";
+import Session from "../models/Session.js";
 
 const authController = {
   signUp: async (req, res) => {
@@ -35,9 +36,9 @@ const authController = {
     try {
       const token = req.cookies?.refreshToken;
       if (token) {
+        await Session.deleteOne({ refreshToken: token });
         res.clearCookie("refreshToken");
       }
-
       res.sendStatus(204);
     } catch (err) {
       res.status(500).json({ message: err.message });

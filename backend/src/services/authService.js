@@ -40,7 +40,7 @@ const authService = {
       if (!user) throw new Error("Tài khoản hoặc mật khẩu không chính xác");
       const passwordCorrect = await bcrypt.compare(password, user.hashPassword);
       if (!passwordCorrect) throw new Error("Tài khoản hoặc mật khẩu không chính xác");
-      const accessToken = await generateToken(user, process.env.ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL);
+      const accessToken = await generateToken({ user }, process.env.ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL);
       const refreshToken = crypto.randomBytes(64).toString("hex");
 
       await Session.create({
@@ -49,7 +49,11 @@ const authService = {
         expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL),
       });
 
-      return { user, accessToken, refreshToken };
+      return {
+        user,
+        accessToken,
+        refreshToken,
+      };
     } catch (err) {
       throw err;
     }

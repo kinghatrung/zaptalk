@@ -9,6 +9,7 @@ function App() {
   return (
     <>
       <Toaster />
+
       <BrowserRouter basename='/'>
         <Routes>
           <Route path='/' element={<ChatAppPage />} />

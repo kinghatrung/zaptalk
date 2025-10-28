@@ -1,11 +1,12 @@
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+
 import { cn } from '~/lib/utils'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 
 const signInSchema = z.object({
   username: z.string().min(8, 'Tên đăng nhập phải có ít nhất 8 ký tự'),
@@ -83,7 +84,7 @@ export function SigninForm({
               </Button>
               <div className='text-center text-sm'>
                 Chưa có tài khoản?{' '}
-                <a href='/signin' className='underline underline-offset-4'>
+                <a href='/signup' className='underline underline-offset-4'>
                   Đăng kí ngay
                 </a>
               </div>

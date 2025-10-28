@@ -1,11 +1,12 @@
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+
 import { cn } from '~/lib/utils'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 
 const signUpSchema = z.object({
   firstname: z.string().min(1, 'Tên bắt buộc phải có'),
@@ -50,7 +51,12 @@ export function SignupForm({
                   <Label htmlFor='lastname' className='block text-sm'>
                     Họ
                   </Label>
-                  <Input type='text' id='lastname' {...register('lastname')} />
+                  <Input
+                    type='text'
+                    id='lastname'
+                    placeholder='Nguyễn'
+                    {...register('lastname')}
+                  />
                   {errors.lastname && (
                     <p className='text-destructive text-sm'>
                       {errors.lastname.message}
@@ -65,6 +71,7 @@ export function SignupForm({
                   <Input
                     type='text'
                     id='firstname'
+                    placeholder='A'
                     {...register('firstname')}
                   />
                   {errors.firstname && (

@@ -1,12 +1,14 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from 'react-router'
 
 import { cn } from '~/lib/utils'
 import { Button } from '~/components/ui/button'
 import { Card, CardContent } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
+import { useAuthStore } from '~/stores/useAuthStore'
 
 const signUpSchema = z.object({
   firstname: z.string().min(1, 'Tên bắt buộc phải có'),
@@ -22,13 +24,20 @@ export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<'div'>) {
+  const { signUp } = useAuthStore()
+  const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm<SignUpFormValues>({ resolver: zodResolver(signUpSchema) })
 
-  const onSubmit = async (data: SignUpFormValues) => {}
+  const onSubmit = async (data: SignUpFormValues) => {
+    const { username, password, firstname, lastname, email } = data
+    await signUp(username, password, email, firstname, lastname)
+    navigate('/signin')
+  }
 
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>

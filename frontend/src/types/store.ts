@@ -1,3 +1,5 @@
+import type { User } from '~/types/user'
+
 export interface AuthStore {
   accessToken: string | null
   user: User | null

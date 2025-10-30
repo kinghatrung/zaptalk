@@ -40,7 +40,7 @@ const authService = {
       if (!user) throw new Error("Tài khoản hoặc mật khẩu không chính xác");
       const passwordCorrect = await bcrypt.compare(password, user.hashPassword);
       if (!passwordCorrect) throw new Error("Tài khoản hoặc mật khẩu không chính xác");
-      const accessToken = await generateToken({ user }, process.env.ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL);
+      const accessToken = await generateToken({ userId: user._id }, process.env.JWT_TOKEN_SECRET, ACCESS_TOKEN_TTL);
       const refreshToken = crypto.randomBytes(64).toString("hex");
 
       await Session.create({
@@ -54,6 +54,22 @@ const authService = {
         accessToken,
         refreshToken,
       };
+    } catch (err) {
+      throw err;
+    }
+  },
+
+  refreshToken: async (token) => {
+    try {
+      if (!token) throw new Error("Token không tồn tại.");
+      const session = await Session.findOne({ refreshToken: token });
+
+      if (!session) throw new Error("Token không hợp lệ .");
+      if (session.expiresAt < new Date()) throw new Error("Token đã hết hạn.");
+
+      const accessToken = generateToken({ userId: session.userId }, process.env.JWT_TOKEN_SECRET, ACCESS_TOKEN_TTL);
+
+      return { accessToken };
     } catch (err) {
       throw err;
     }

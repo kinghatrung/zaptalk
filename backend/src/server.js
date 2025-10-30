@@ -6,6 +6,7 @@ import cors from "cors";
 import { connect } from "./lib/db.js";
 import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
+import authMiddleware from "./middlewares/authMiddleware.js";
 
 dotenv.config();
 
@@ -14,9 +15,17 @@ const PORT = process.env.PORT || 5001;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
-
+app.use(
+  cors({
+    origin: `${process.env.CLIENT_URL}`,
+    credentials: true,
+  })
+);
+// public router
 app.use("/api/auth", authRoute);
+
+// private router
+app.use(authMiddleware.isAuthorized);
 app.use("/api/users", userRoute);
 
 connect().then(() => {

@@ -26,20 +26,40 @@ const authController = {
         maxAge: ms("14 days"),
       });
 
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: ms("15 m"),
+      });
+
       res.status(200).json({ message: `Người dùng ${user.displayName} đăng nhập thành công`, accessToken });
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
   },
 
-  logout: async (req, res) => {
+  signOut: async (req, res) => {
     try {
-      const token = req.cookies?.refreshToken;
-      if (token) {
-        await Session.deleteOne({ refreshToken: token });
+      const refreshTokenFromCookies = req.cookies?.refreshToken;
+      if (refreshTokenFromCookies) {
+        await Session.deleteOne({ refreshToken: refreshTokenFromCookies });
         res.clearCookie("refreshToken");
+        res.clearCookie("accessToken");
       }
       res.sendStatus(204);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
+
+  refreshToken: async (req, res) => {
+    try {
+      const token = req.cookies?.refreshToken;
+
+      const { accessToken } = await authService.refreshToken(token);
+
+      res.status(200).json({ accessToken });
     } catch (err) {
       res.status(500).json({ message: err.message });
     }

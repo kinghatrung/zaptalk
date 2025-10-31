@@ -8,6 +8,14 @@ const userController = {
       res.status(500).json({ message: err.message });
     }
   },
+
+  test: async (req, res) => {
+    try {
+      res.sendStatus(200);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  },
 };
 
 export default userController;

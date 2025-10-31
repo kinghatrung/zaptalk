@@ -1,6 +1,7 @@
 import ms from "ms";
 import authService from "../services/authService.js";
 import Session from "../models/Session.js";
+import { generateToken } from "../providers/jwtProvider.js";
 
 const authController = {
   signUp: async (req, res) => {
@@ -49,17 +50,15 @@ const authController = {
     try {
       const token = req.cookies?.refreshToken;
 
-      const { accessToken } = await authService.refreshToken(token);
+      if (!token) return res.status(401).json({ message: "Không tìm thấy token" });
+
+      const session = await Session.findOne({ refreshToken: token });
+
+      if (!session) return res.status(403).json({ message: "Token không hợp lệ." });
+      if (session.expiresAt < new Date()) return res.status(403).json({ message: "Token đã hết hạn." });
+      const accessToken = generateToken({ userId: session.userId }, process.env.JWT_TOKEN_SECRET, "15s");
 
       res.status(200).json({ accessToken });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  },
-
-  test: async (req, res) => {
-    try {
-      res.sendStatus(200);
     } catch (err) {
       res.status(500).json({ message: err.message });
     }

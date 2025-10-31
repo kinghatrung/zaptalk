@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
-import { generateToken, verifyToken } from "../providers/jwtProvider.js";
+import { generateToken } from "../providers/jwtProvider.js";
 import User from "../models/User.js";
 import Session from "../models/Session.js";
 
-const ACCESS_TOKEN_TTL = "15m";
+const ACCESS_TOKEN_TTL = "15s";
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000;
 
 const authService = {
@@ -54,22 +54,6 @@ const authService = {
         accessToken,
         refreshToken,
       };
-    } catch (err) {
-      throw err;
-    }
-  },
-
-  refreshToken: async (token) => {
-    try {
-      if (!token) throw new Error("Token không tồn tại.");
-      const session = await Session.findOne({ refreshToken: token });
-
-      if (!session) throw new Error("Token không hợp lệ .");
-      if (session.expiresAt < new Date()) throw new Error("Token đã hết hạn.");
-
-      const accessToken = generateToken({ userId: session.userId }, process.env.JWT_TOKEN_SECRET, ACCESS_TOKEN_TTL);
-
-      return { accessToken };
     } catch (err) {
       throw err;
     }

@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
-import { generateToken, verifyToken } from "../providers/jwtProvider.js";
+import { generateToken } from "../providers/jwtProvider.js";
 import User from "../models/User.js";
 import Session from "../models/Session.js";
 
-const ACCESS_TOKEN_TTL = "15m";
+const ACCESS_TOKEN_TTL = "15s";
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000;
 
 const authService = {
@@ -24,7 +24,7 @@ const authService = {
         username,
         hashPassword: hashedPassword,
         email,
-        displayName: `${firstName} ${lastName}`,
+        displayName: `${lastName} ${firstName} `,
       });
 
       return;
@@ -40,7 +40,7 @@ const authService = {
       if (!user) throw new Error("Tài khoản hoặc mật khẩu không chính xác");
       const passwordCorrect = await bcrypt.compare(password, user.hashPassword);
       if (!passwordCorrect) throw new Error("Tài khoản hoặc mật khẩu không chính xác");
-      const accessToken = await generateToken({ user }, process.env.ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL);
+      const accessToken = await generateToken({ userId: user._id }, process.env.JWT_TOKEN_SECRET, ACCESS_TOKEN_TTL);
       const refreshToken = crypto.randomBytes(64).toString("hex");
 
       await Session.create({

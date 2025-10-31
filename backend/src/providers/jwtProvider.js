@@ -8,7 +8,8 @@ export const generateToken = (userInfo, secretSignature, tokenLife) => {
       expiresIn: tokenLife,
     });
   } catch (err) {
-    throw new Error(err);
+    throw err;
+    // throw new Error(err);
   }
 };
 
@@ -17,6 +18,6 @@ export const verifyToken = async (token, secretSignature) => {
     // Hàm verify() của jwt
     return jwt.verify(token, secretSignature);
   } catch (err) {
-    throw new Error(err);
+    throw err;
   }
 };
